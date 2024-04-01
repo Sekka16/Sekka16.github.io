@@ -1,6 +1,6 @@
 ---
-title: MLC Lesson8 矩阵乘法样例
-date: 2024-03-26 23:33:36
+title: MLC Lesson6 矩阵乘法样例分析
+date: 2024-03-31 19:09:35
 tags:
 description: TVM矩阵乘法课程样例，与CPU不同，GPU上涉及线程块和线程，访存也有所优化，包括local memory、shared memory、global memory的数据传递等。本文为笔记中独立出来的样例部分，详细展示了样例的每一步变换。
 ---
@@ -59,7 +59,7 @@ sch = blocking_with_shared(sch, 8, 8, 8, 8, 8)
 sch.mod.show()
 ```
 
-未做任何变换前：
+未做任何变换前的IRModule：
 
 ```python
 # from tvm.script import ir as I
@@ -81,7 +81,7 @@ class Module:
                 C[vi, vj] = C[vi, vj] + A[vi, vk] * B[vk, vj]
 ```
 
-这里的cache_write创建的类型是local，每个线程私有的内存空间，这样做的原因可以不用频繁地访问global memory？
+这里的`cache_write`创建的类型是local，每个线程私有的内存空间，这样做的原因可以不用频繁地访问global memory？
 
 ```
     block_C = sch.get_block("C")
@@ -98,7 +98,9 @@ class Module:
     def main(A: T.Buffer((1024, 1024), "float32"), B: T.Buffer((1024, 1024), "float32"), C: T.Buffer((1024, 1024), "float32")):
         T.func_attr({"tir.noalias": T.bool(True)})
         # with T.block("root"):
+##################################################################################
         C_local = T.alloc_buffer((1024, 1024), scope="local")
+##################################################################################
         for i, j, k in T.grid(1024, 1024, 1024):
             with T.block("C"):
                 vi, vj, vk = T.axis.remap("SSR", [i, j, k])
@@ -211,6 +213,7 @@ class Module:
                     with T.init():
                         C_local[vi, vj] = T.float32(0)
                     C_local[vi, vj] = C_local[vi, vj] + A[vi, vk] * B[vk, vj]
+##################################################################################
             for ax0, ax1 in T.grid(8, 8):
                 with T.block("C_local"):
                     v0 = T.axis.spatial(1024, i_0 * 64 + i_1 * 8 + ax0)
@@ -218,6 +221,7 @@ class Module:
                     T.reads(C_local[v0, v1])
                     T.writes(C[v0, v1])
                     C[v0, v1] = C_local[v0, v1]
+##################################################################################
 ```
 
 绑定坐标轴到线程块的id，这里的id是二维坐标包含`blockIdx.y`和`blockIdx.x`：
@@ -360,6 +364,7 @@ class Module:
         T.func_attr({"tir.noalias": T.bool(True)})
         # with T.block("root"):
         C_local = T.alloc_buffer((1024, 1024), scope="local")
+##################################################################################
         A_shared = T.alloc_buffer((1024, 1024), scope="shared")
         for ax0, ax1 in T.grid(1024, 1024):
             with T.block("A_shared"):
@@ -367,6 +372,7 @@ class Module:
                 T.reads(A[v0, v1])
                 T.writes(A_shared[v0, v1])
                 A_shared[v0, v1] = A[v0, v1]
+##################################################################################
         for i_0 in T.thread_binding(16, thread="blockIdx.y"):
             for j_0 in T.thread_binding(16, thread="blockIdx.x"):
                 for i_1_j_1_fused in T.thread_binding(64, thread="threadIdx.x"):
@@ -408,6 +414,7 @@ class Module:
             for j_0 in T.thread_binding(16, thread="blockIdx.x"):
                 for i_1_j_1_fused in T.thread_binding(64, thread="threadIdx.x"):
                     for k_0 in range(128):
+##################################################################################
                         for ax0, ax1 in T.grid(64, 8):
                             with T.block("A_shared"):
                                 v0 = T.axis.spatial(1024, i_0 * 64 + ax0)
@@ -415,6 +422,7 @@ class Module:
                                 T.reads(A[v0, v1])
                                 T.writes(A_shared[v0, v1])
                                 A_shared[v0, v1] = A[v0, v1]
+##################################################################################
                         for k_1, i_2, j_2 in T.grid(8, 8, 8):
                             with T.block("C"):
                                 vi = T.axis.spatial(1024, i_0 * 64 + i_1_j_1_fused // 8 * 8 + i_2)
@@ -653,5 +661,4 @@ evaluator = rt_mod.time_evaluator("main", dev, number=10)
 
 print("GEMM-Blocking: %f GFLOPS" % (num_flop / evaluator(A_nd, B_nd, C_nd).mean / 1e9))
 ```
-
 
