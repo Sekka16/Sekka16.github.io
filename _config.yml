@@ -8,7 +8,7 @@ subtitle: 向死而行的生命都在热烈地生长
 description: 是个可爱的男孩子！
 keywords:
 author: 丁勤
-language: zh-CN
+language: zh-CN 
 timezone: ''
 
 # URL
@@ -96,7 +96,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: next
+theme: butterfly
 
 # Deployment
 ## Docs: https://hexo.io/docs/one-command-deployment
