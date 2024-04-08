@@ -2,6 +2,9 @@
 title: MLC-Lesson6-GPU硬件加速1
 date: 2024-04-04 11:34:29
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 本章简单介绍了GPU的体系结构，并介绍了两个将TensorIR函数运行到GPU上的示例。
 ---
 

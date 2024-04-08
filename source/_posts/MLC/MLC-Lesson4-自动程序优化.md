@@ -2,6 +2,9 @@
 title: MLC-Lesson4-自动程序优化
 date: 2024-04-04 10:57:39
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 之前对IRMoudle的优化包括循环展开、向量化等都是手动完成，本章介绍MetaSchedule自动化完成程序优化的过程。
 ---
 

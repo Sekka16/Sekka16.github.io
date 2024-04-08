@@ -2,6 +2,9 @@
 title: MLC-Lesson5-与机器学习框架的整合
 date: 2024-04-04 11:15:38
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 本章介绍了使用te创建TensorIR函数，利用BlockBuilder构建IRModule，此后将PyTorch模型导入成为IRModule。
 ---
 

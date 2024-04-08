@@ -2,6 +2,9 @@
 title: MLC Lesson8 计算图优化
 date: 2024-03-31 19:02:58
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 本章聚焦于高层计算图的优化，包括算子融合和映射到TensorIR函数
 ---
 

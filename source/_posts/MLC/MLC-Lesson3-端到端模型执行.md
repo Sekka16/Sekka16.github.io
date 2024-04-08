@@ -1,7 +1,10 @@
 ---
 title: MLC-Lesson3-端到端模型执行
 date: 2024-04-04 10:26:03
-tags:
+tags: 
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 本章主要介绍了使用TVMScript编写IRModule，并且运行端到端模型的过程，包括对计算图概念的解释，目标传递原则简述，算子注册的过程以及构建模型时的参数绑定过程。
 ---
 

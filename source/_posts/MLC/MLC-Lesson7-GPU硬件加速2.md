@@ -2,6 +2,9 @@
 title: MLC-Lesson7-GPU硬件加速2
 date: 2024-04-04 11:43:48
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 本文介绍了张量化Block，专用加速器在张量区域上运行计算，张量化Block可以帮助我们将此类运算分组。
 ---
 

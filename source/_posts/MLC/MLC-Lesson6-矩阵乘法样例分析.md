@@ -2,6 +2,9 @@
 title: MLC Lesson6 矩阵乘法样例分析
 date: 2024-03-31 19:09:35
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: TVM矩阵乘法课程样例，与CPU不同，GPU上涉及线程块和线程，访存也有所优化，包括local memory、shared memory、global memory的数据传递等。本文为笔记中独立出来的样例部分，详细展示了样例的每一步变换。
 ---
 

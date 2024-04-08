@@ -2,6 +2,9 @@
 title: MLC Lesson7 引入特殊内存层级示例
 date: 2024-03-31 19:16:40
 tags:
+- TVM
+categories: 
+- [学习笔记, MLC]
 description: 所谓特殊内存层级，实际上就是类似于Cache的存在，具体看硬件实现。
 ---
 
