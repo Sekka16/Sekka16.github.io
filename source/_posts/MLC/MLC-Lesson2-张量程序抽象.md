@@ -1,11 +1,11 @@
 ---
 title: MLC-Lesson2-张量程序抽象
 date: 2024-04-08 21:41:07
-tags:
+tags: 
 - TVM
-categories:
-— [学习笔记, MLC]
-description:
+categories: 
+- [学习笔记, MLC]
+description: 本章主要介绍了TensorIR函数，以及如何对对其进行变换
 ---
 
 # 2 张量函数抽象
