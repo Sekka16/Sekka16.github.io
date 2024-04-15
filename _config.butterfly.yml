@@ -52,7 +52,7 @@ disable_top_img: false
 
 # The banner image of home page
 # index_img: https://raw.githubusercontent.com/Sekka16/Sekka16.github.io/main/source/images/bk.jpg
-index_img: /images/summernight.jpg
+index_img: /images/sakura_street.jpg
 
 # If the banner of page not setting, it will show the top_img
 default_top_img: transparent
@@ -344,6 +344,11 @@ rightside_item_order:
 # if you set it to false, it will load mathjax/katex script according to your setting (add the 'mathjax: true' in page's front-matter)
 # (false 需要時加載，須在使用的 Markdown Front-matter 加上 mathjax: true)
 
+# markdown
+markdown:
+    plugins:
+      - '@renbaoshuo/markdown-it-katex'
+
 # MathJax
 mathjax:
   enable: false
@@ -351,7 +356,7 @@ mathjax:
 
 # KaTeX
 katex:
-  enable: false
+  enable: true
   per_page: false
   hide_scrollbar: true
 
@@ -643,7 +648,7 @@ text_align_justify: false
 # Website Background (設置網站背景)
 # can set it to color or image (可設置圖片 或者 顔色)
 # The formal of image: url(http://xxxxxx.com/xxx.jpg)
-background: url(https://raw.githubusercontent.com/Sekka16/Sekka16.github.io/main/source/images/summernight.jpg)
+background: url(https://raw.githubusercontent.com/Sekka16/Sekka16.github.io/main/source/images/sakura_street.jpg)
 
 # Footer Background
 footer_bg: transparent
