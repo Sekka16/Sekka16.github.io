@@ -340,3 +340,76 @@ def compute_gradient_of_variables(output_tensor, out_grad):
     ### END YOUR SOLUTION
 ```
 
+## 5 SGD for a two-layer neural network
+
+本题将基于我们完成的`Needle`框架（部分完成）实现一个两层神经网络的随机梯度下降算法，需要注意的是，本次使用到了`ReLu`算法，而获得`ReLu`算法的反向梯度，需要知道输入张量的具体数值，因此我们需要用到`.realize_cached_data()`。
+
+![image-20240428233927781](hw1/image-20240428233927781.png)
+
+`ReLu`的实现
+
+```python
+class ReLU(TensorOp):
+    def compute(self, a):
+        ### BEGIN YOUR SOLUTION
+        return array_api.maximum(0, a)
+        ### END YOUR SOLUTION
+
+    def gradient(self, out_grad, node):
+        ### BEGIN YOUR SOLUTION
+        a = node.inputs[0].realize_cached_data()
+        # a > 0的结果是一个元素类型为布尔的张量
+        return out_grad * Tensor(a > 0)
+        ### END YOUR SOLUTION
+
+
+def relu(a):
+    return ReLU()(a)
+```
+
+两层神经网络的训练
+
+```python
+def nn_epoch(X, y, W1, W2, lr=0.1, batch=100):
+    """Run a single epoch of SGD for a two-layer neural network defined by the
+    weights W1 and W2 (with no bias terms):
+        logits = ReLU(X * W1) * W1
+    The function should use the step size lr, and the specified batch size (and
+    again, without randomizing the order of X).
+
+    Args:
+        X (np.ndarray[np.float32]): 2D input array of size
+            (num_examples x input_dim).
+        y (np.ndarray[np.uint8]): 1D class label array of size (num_examples,)
+        W1 (ndl.Tensor[np.float32]): 2D array of first layer weights, of shape
+            (input_dim, hidden_dim)
+        W2 (ndl.Tensor[np.float32]): 2D array of second layer weights, of shape
+            (hidden_dim, num_classes)
+        lr (float): step size (learning rate) for SGD
+        batch (int): size of SGD mini-batch
+
+    Returns:
+        Tuple: (W1, W2)
+            W1: ndl.Tensor[np.float32]
+            W2: ndl.Tensor[np.float32]
+    """
+
+    ### BEGIN YOUR SOLUTION
+    num_examples, num_classes = X.shape[0], W2.shape[1]
+    for i in range(0, num_examples, batch):
+        sample = ndl.Tensor(X[i:i+batch, :])
+        label = y[i:i+batch]
+
+        Z = ndl.matmul(ndl.relu(ndl.matmul(sample, W1)), W2)
+        I_y = np.zeros((batch, num_classes))
+        I_y[np.arange(batch), label] = 1
+
+        loss = softmax_loss(Z, ndl.Tensor(I_y))
+        loss.backward()
+        W1 = ndl.Tensor(W1.realize_cached_data() - lr * W1.grad.realize_cached_data())
+        W2 = ndl.Tensor(W2.realize_cached_data() - lr * W2.grad.realize_cached_data())
+
+    return W1, W2
+    ### END YOUR SOLUTION
+```
+
