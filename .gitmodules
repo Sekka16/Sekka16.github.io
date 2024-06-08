@@ -3,4 +3,4 @@
 	url = git@github.com:Sekka16/hexo-theme-butterfly.git
 [submodule "themes/cactus"]
 	path = themes/cactus
-	url = git@github.com:probberechts/hexo-theme-cactus.git
+	url = git@github.com:Sekka16/hexo-theme-cactus.git
