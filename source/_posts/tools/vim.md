@@ -1,5 +1,5 @@
 ---
-title: vim
+title: VIM入门指南
 date: 2024-05-22 23:36:49
 tags:
 categories:

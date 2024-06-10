@@ -1,3 +1,12 @@
+---
+title: C++中vector的实现
+date: {{ date }}
+tags:
+categories:
+description: 
+---
+
+
 # c++中vector的实现
 
 参考：https://blog.csdn.net/weixin_50941083/article/details/122354948
