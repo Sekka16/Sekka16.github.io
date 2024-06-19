@@ -41,6 +41,7 @@ $ export LLVM_BUILD_DIR=$HOME/llvm-project/build
 $ LLVM_INCLUDE_DIRS=$LLVM_BUILD_DIR/include \
   LLVM_LIBRARY_DIR=$LLVM_BUILD_DIR/lib \
   LLVM_SYSPATH=$LLVM_BUILD_DIR \
+  
   pip install -e python
 # If you want see more build log, you can use "pip install -e python -vvv"
 ```
