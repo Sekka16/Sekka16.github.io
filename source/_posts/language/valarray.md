@@ -1,6 +1,6 @@
 ---
 title: C++中vector的实现
-date: {{ date }}
+date: 2024-06-05 21:00:00
 tags:
 categories:
 description: 

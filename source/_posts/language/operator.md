@@ -1,6 +1,6 @@
 ---
 title: C++运算符重载
-date: {{ date }}
+date: 2023-06-05 21:00:00
 tags:
 categories:
 description: 
