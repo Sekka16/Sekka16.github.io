@@ -1,0 +1,87 @@
+import re
+import sys
+
+def process_file(file_path):
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    # 匹配函数定义
+    func_pattern = re.compile(
+        r'__DEVICE__\s+(?P<return_type>\w+)\s+__cn_(?P<type>scalar|vector)_(?P<funcname>\w+)_(?P<datatype>f16|f32)\((?P<params>.*?)\)\s*\{(?P<body>.*?)\}',
+        re.DOTALL
+    )
+
+    def replace_func(match):
+        return_type = match.group('return_type')
+        func_type = match.group('type')
+        funcname = match.group('funcname')
+        datatype = match.group('datatype')
+        params = match.group('params')
+        body = match.group('body')
+
+        if func_type == 'scalar':
+            new_body = """
+    half __y;
+    asm("{funcname}.scalar.{datatype}");
+    return __y;
+""".format(funcname=funcname, datatype=datatype)
+        elif func_type == 'vector':
+            # 检查是否包含ASSUME宏
+            if 'ASSUME' in body:
+                new_body = '\tASSUME\n    asm("{funcname}.vector.{datatype}");'.format(funcname=funcname, datatype=datatype)
+            else:
+                new_body = '    asm("{funcname}.vector.{datatype}");'.format(funcname=funcname, datatype=datatype)
+
+        return """__DEVICE__ {return_type} __cn_{func_type}_{funcname}_{datatype}({params}) {{
+{new_body}
+}}""".format(return_type=return_type, func_type=func_type, funcname=funcname, datatype=datatype, params=params, new_body=new_body)
+
+    processed_content = func_pattern.sub(replace_func, content)
+
+    with open(file_path, 'w') as file:
+        file.write(processed_content)
+
+if __name__ == "__main__":
+    file_path = "example.c"
+    process_file(file_path)
+1. 匹配函数定义: __DEVICE__ <A> __cn_<B>_<funcname>_<datatype>(...参数列表)
+    - <A> : 返回值类型
+    - <B> : scalar or vector
+    - <funcname> : 函数名
+    - <datatype> : f16 or f32
+
+2. 根据花括号（注意嵌套）匹配函数体
+    - 如果<B>是scalar，则删除函数体的所有内容。
+    - 如果<B>是vector，则检查是否包含ASSUME宏，删除除该宏之外的所有内容。
+
+3. 在函数体中插入模板
+    - 如果<B>是scalar，则插入
+    ```C
+    half __y;
+    asm("<funcname>.scalar.<datatype>");
+    return __y;
+    ```
+    - 如果<B>是vector，则插入
+    ```C
+    asm("<funcname>.vector.<datatype>");
+    ```
+示例处理的文件：
+```C
+__DEVICE__ void __cn_vector_exp2_f32(int n, float __y, float __x) {
+  ASSUME
+  printf("Hello world");
+}
+```
+
+要求的效果：
+```C
+__DEVICE__ void __cn_vector_exp2_f32(int n, float __y, float __x) {
+  ASSUME
+  asm("exp2.vector.f32");
+}
+```
+
+__DEVICE__ void __cn_vector_exp2_f32(int n, float __y, float __x) {
+	ASSUME
+    asm("exp2.vector.f32");
+}
