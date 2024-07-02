@@ -78,3 +78,32 @@ class BatchNorm1d(Module):
         ### END YOUR SOLUTION
 ```
 
+## Question3
+
+### SGD
+```python
+needle.optim.SGD(params, lr=0.01, momentum=0.0, weight_decay=0.0)
+```
+开始前先做一些说明：
+- `params`: 类型为`list`，每一个元素的元素类型是`Parameter`，也即是`Tensor`。
+- `self.u`: 类型为`dict`，每个参数遇到一个对应的**动量值**，参数本身是个键。
+- `self.momentum`: 这个其实不是动量，而是动量因子，决定了之前动量和当前梯度在更新中的权重。
+- `weight_decay`: 这个其实是损失函数的L2正则项系数的两倍。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
