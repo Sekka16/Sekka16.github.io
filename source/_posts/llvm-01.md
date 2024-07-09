@@ -10,7 +10,7 @@ description:
 
 ## 1 生成LLVM IR
 
-以这样一段源程序为例：
+以这样一段源程序`gcd.c`为例：
 
 ```C
 unsigned gcd(unsigned a, unsigned b) {
@@ -95,6 +95,12 @@ target triple = "aarch64-unknown-linux-gnu"
 
 ## 2 basic blocks
 
+对于一个基本块，有以下描述：
+
+> A well-formed basic block is a linear sequence of instructions, which begins with an optional label and ends with a terminator instruction.
+
+也就是说，基本块由一个可选的`label`标记开始，由分支语句(br)或者返回语句(ret)标记结束，中间是一段线性的指令序列。
+
 ```llvm
 define dso_local i32 @gcd(i32 %0, i32 %1) local_unnamed_addr #0 {
   %3 = icmp eq i32 %1, 0
@@ -112,3 +118,35 @@ define dso_local i32 @gcd(i32 %0, i32 %1) local_unnamed_addr #0 {
   ret i32 %10
 }
 ```
+
+对于如上的程序，共分为三个`basic block`，其中第一个`basic block`隐藏了其`label`(2)。
+
+## 3 SSA
+
+IR 代码的另一个特点是它采用静态单赋值（SSA）形式。代码使用无限数量的虚拟寄存器，但每个寄存器仅被写入一次。比较的结果被赋值给命名的虚拟寄存器。这个寄存器随后被使用，但不会再被写入。
+
+常量传播和公共子表达式消除等优化在 SSA 形式下效果非常好，现代编译器都采用这种形式。
+
+**SSA 的一个基本特性是它建立了定义-使用（def-use）和使用-定义（use-def）链：对于一个单一的定义，你知道所有使用（def-use），而对于每一个使用，你知道唯一的定义（use-def）。**
+
+```llvm
+4:                                                ; preds = %2, %4
+  %5 = phi i32 [ %7, %4 ], [ %1, %2 ]
+  %6 = phi i32 [ %5, %4 ], [ %0, %2 ]
+  %7 = urem i32 %6, %5
+  %8 = icmp eq i32 %7, 0
+  br i1 %8, label %9, label %4, !llvm.loop !6
+```
+
+在这个循环中，`%5`和`%6`被赋予了新的值，这显然是不符合SSA的。解决方案是使用特殊的`phi`指令。
+
+`phi` 指令将基本块和值的列表作为参数。基本块表示来自哪个基本块的传入边，值是该基本块的值。
+
+具体来说，以下代码的含义为：
+- 如果之前的基本块是 %4，那么 %5 的值为 %7。
+- 如果之前的基本块是 %2，那么 %5 的值为 %1。
+```llvm
+  %5 = phi i32 [ %7, %4 ], [ %1, %2 ]
+```
+
+> **注意：**`phi`命令只能用在一个`basic block`的开始，并且由于第一个`basic block`没有前置块，所以第一条命令必然不能是`phi`命令
