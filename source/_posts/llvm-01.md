@@ -215,3 +215,30 @@ define dso_local i32 @gcd(i32 noundef %0, i32 noundef %1) #0 {
 
 ## Mapping the control flow to basic blocks
 
+`basic block`由唯一`label`标记其首条指令，`label`作为分支目标。分支在`basic block`间形成有向边，构成控制流图（CFG），其中`basic block`可有前驱和后继。
+
+```llvm
+void emitStmt(WhileStatement *Stmt) {
+  llvm::BasicBlock *WhileCondBB = llvm::BasicBlock::Create(CGM.getLLVMCtx(), "while.cond", Fn);
+  llvm::BasicBlock *WhileBodyBB = llvm::BasicBlock::Create(CGM.getLLVMCtx(), "while.body", Fn);
+  llvm::BasicBlock *AfterWhileBB = llvm::BasicBlock::Create(CGM.getLLVMCtx(), "after.while", Fn);
+
+  Builder.CreatBr(WhileCondBB);
+
+  setCurr(WhileCondBB);
+    llvm::Value *Cond = emitExpr(Stmt->getCond());
+    Builder.CreateCondBr(Cond, WhileBodyBB, AfterWhileBB);
+
+  setCurr(WhileBodyBB):
+    emit(Stmt->getWhileStmt());
+    Builder.CreateBr(WhileCondBB);
+
+  sealBlock(WhileBodyBB);
+    sealBlock(Curr);
+
+  setCurr(AfterWhileBB);
+}
+```
+
+## Using AST numbering
+
