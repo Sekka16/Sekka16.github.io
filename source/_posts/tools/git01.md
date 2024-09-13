@@ -1,3 +1,12 @@
+---
+title: [git] git提交到错误分支的处理办法 
+date: 2024-09-12 00:00:00 
+tags:
+- git
+categories:
+- [工具, git]
+description: 
+---
 
 # [git] git提交到错误分支的处理方法
 
